@@ -30,7 +30,42 @@
 
 ### Possible Solution
 
-- 由学院官方层面推动`whc.edu.cn`替换原有域名并提供邮箱服务
-- 由计算机科学专业的同学或相关社团维护自治`@whc.ac.cn`邮箱
+- **PlanA**: 由学院官方层面推动`whc.edu.cn`替换原有域名并提供邮箱服务
+- **PlanB**: 由计算机科学专业的同学或相关社团维护自治`@whc.ac.cn`邮箱
 
 > `whc.ac.cn` 域名已为本repo预留
+
+### How to do PlanB
+
+> 该方案需要广泛的群众支持,以及可靠的域名邮箱服务.
+
+贡献者Contributor贡献流程: 年级或班级负责人收集同学们的`学号,身份证后6位`信息,并串接盐`$SALT`进行`sha256`.提交到私密仓库Private-A.无论是仓库所有人/项目发起人/抑或是数据泄漏后得到该文件的黑客,均无法反推得到任何有效信息.
+
+Github Action工作流程: 用户输入`学号,身份证后6位`,触发Action Workflow.对用户输入信息进行`sha256(input+$SALT)`匹配,Action Workflow使用Github Action Secrets内置密钥读取私密仓库Private-A内存放的加密数据.若匹配成功则触发后序步骤,通过HTTP接口激活该学号对应域名邮箱.
+
+```
+# How the data is collected by Contributor in Local
+# 信息收集时刻，存于负责人本地的CSV表格
+2020080855,190745
+2020080856,056935
+2020080857,572303
+```
+
+负责人得到维护者提供的盐`$SALT`用以`sha256`加密.
+```
+# How the data is encrypted by Contributor
+# 负责人在本地对数据进行sha256+salt加密
+sha256("2020080855,190745" + "SALT-#2f2fv234t34dcds$F#$@23242")
+sha256("2020080856,056935" + "SALT-#2f2fv234t34dcds$F#$@23242")
+sha256("2020080857,572303" + "SALT-#2f2fv234t34dcds$F#$@23242")
+```
+
+```
+# How the data is pushed to Private-A repo by Contributor
+# 负责人提交给项目组的内容为密文
+69e3dfc89d320cab406ab4da1939643872e45bba36bd22be78214bc64fcbb8a7
+a03c17e11eb75a578942ff69c840b552d14bd14bef7a96e74088419280cec534
+0c8beae715850907dd7399af95482eb43151baa18f5ea9ed1a989fb589f07037
+```
+
+负责人删除本地原始信息.
